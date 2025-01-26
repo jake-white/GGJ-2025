@@ -7,6 +7,7 @@ public class Blind : MonoBehaviour
     public float hp = 100, maxhp = 100;
     public GameObject intact, broken;
     public GameObject brokenLeft, brokenRight, breakIconParent;
+    public GameObject fly;
     public float damageSpeed = 0.1f;
     public BlindState state;
     bool unbreakable = false;
@@ -23,12 +24,14 @@ public class Blind : MonoBehaviour
         }
     }
 
-    public void Initialize(float width, float height, float y, float z, bool unbreakable)
+    public void Initialize(float width, float height, float y, float z, bool unbreakable, bool shouldHaveFly)
     {
         this.width = width;
         this.height = height;
         this.hp = this.maxhp;
         this.unbreakable = unbreakable;
+        fly.SetActive(shouldHaveFly);
+        fly.transform.localPosition = new Vector3(Random.Range((-width / 2) + 2, (width / 2) - 2), 0, 0);
         intact.transform.localScale = new Vector3(width, height, 1);
         brokenLeft.transform.localScale = new Vector3(width, height, 1);
         brokenRight.transform.localScale = new Vector3(width, height, 1);

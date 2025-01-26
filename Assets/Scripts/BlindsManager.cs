@@ -42,7 +42,8 @@ public class BlindsManager : SingletonBehavior<BlindsManager>
     public void RandomizeBlind(Blind b, bool shouldBeUnbreakable)
     {
         float height = Random.Range(minHeight, maxHeight);
-        b.Initialize(blindWidth, height, lastBlindHeight, baseBlind.transform.position.z, shouldBeUnbreakable);
+        bool shouldHaveFly = Random.Range(0.0f, 1.0f) > 0.7f;
+        b.Initialize(blindWidth, height, lastBlindHeight, baseBlind.transform.position.z, shouldBeUnbreakable, shouldHaveFly);
         lastBlindHeight += height + RandomInterval();
     }
 

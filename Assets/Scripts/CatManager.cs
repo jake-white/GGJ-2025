@@ -1,4 +1,5 @@
 using CollabXR;
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -13,7 +14,9 @@ public class CatManager : SingletonBehavior<CatManager>
 
     private InputAction leftMoveAction, leftGrabAction, rightMoveAction, rightGrabAction;
     public Rigidbody2D body;
+    public List<AudioClip> meowClips;
     Vector3 bodyStart, leftPawStart, rightPawStart;
+    AudioSource source;
 
     protected override void Awake()
     {
@@ -23,6 +26,7 @@ public class CatManager : SingletonBehavior<CatManager>
         bodyStart = body.transform.position;
         leftPawStart = leftPaw.transform.position;
         rightPawStart = rightPaw.transform.position;
+        source = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -71,5 +75,11 @@ public class CatManager : SingletonBehavior<CatManager>
         rightPaw.transform.position = rightPawStart;
         rightPaw.UnGrab(true);
         rightPaw.body.linearVelocity = Vector2.zero;
+    }
+
+    public void PlayMeow(int index)
+    {
+        source.clip = meowClips[index];
+        source.Play();
     }
 }

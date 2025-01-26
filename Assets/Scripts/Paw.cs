@@ -9,7 +9,6 @@ public class Paw : MonoBehaviour
     public LineRenderer lr;
     public GameObject claws;
     public PawState state;
-    public float forceMod = 1.0f;
     public Rigidbody2D body;
     public Paw otherPaw;
     List<Blind> blindsGrabbable;
@@ -26,12 +25,15 @@ public class Paw : MonoBehaviour
     {
         lr.SetPosition(0, transform.position);
         lr.SetPosition(1, armAttach.position);
-        if(grabbedBlind != null)
+        if (!GameManager.Instance.BlindsAreUnbreaking())
         {
-            bool broken = grabbedBlind.DamageDoesItBreak(Time.deltaTime);
-            if(broken)
+            if (grabbedBlind != null)
             {
-                UnGrab(true);
+                bool broken = grabbedBlind.DamageDoesItBreak(Time.deltaTime);
+                if (broken)
+                {
+                    UnGrab(true);
+                }
             }
         }
     }
@@ -52,7 +54,13 @@ public class Paw : MonoBehaviour
         {
             body.gravityScale = 0;
         }
-        body.AddForce(v*forceMod);
+        body.AddForce(v*GameManager.Instance.GetForceMod());
+    }
+
+    void Collect(Collectible c)
+    {
+        GameManager.Instance.AddFlies(1);
+        c.CollectMe();
     }
 
     public void TryGrab(CallbackContext ctx)
@@ -107,15 +115,25 @@ public class Paw : MonoBehaviour
         {
             body.linearVelocity = CatManager.Instance.GetBodyVelocity();
         }
+        else
+        {
+            //CatManager.Instance.PlayMeow(2);
+        }
         state = PawState.Free;
     }
 
     private void OnTriggerEnter2D(Collider2D collider)
     {
         Blind blind = collider.GetComponentInParent<Blind>();
+        Collectible collectible = collider.GetComponentInParent<Collectible>();
         if(blind != null)
         {
             blindsGrabbable.Add(blind);
+        }
+
+        if(collectible != null)
+        {
+            Collect(collectible);
         }
     }
 
