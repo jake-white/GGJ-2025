@@ -10,28 +10,41 @@ using Unity.Services.Leaderboards.Models;
 using Unity.VisualScripting;
 using CollabXR;
 using TMPro;
+using System.Collections.Generic;
+using System.Collections;
 
 public class LeaderboardManager : SingletonBehavior<LeaderboardManager>
 {
     const string LeaderboardId = "ggj-2025";
-    public TextMeshProUGUI names, scores;
+    string myId;
+    public List<LeaderboardDisplay> displays;
+    IEnumerator coroutine;
 
     override protected async void Awake()
     {
+        base.Awake();
         await UnityServices.InitializeAsync();
 
         await SignInAnonymously();
+        coroutine = CheckLeaderboard();
+        StartCoroutine(coroutine);
+    }
 
-        AddScore();
-
-        GetScores();
+    IEnumerator CheckLeaderboard()
+    {
+        while(true)
+        {
+            GetScores();
+            yield return new WaitForSeconds(30.0f);
+        }
     }
 
     async Task SignInAnonymously()
     {
         AuthenticationService.Instance.SignedIn += () =>
         {
-            Debug.Log("Signed in as: " + AuthenticationService.Instance.PlayerId);
+            myId = AuthenticationService.Instance.PlayerId;
+            Debug.Log("Signed in as: " + myId);
         };
         AuthenticationService.Instance.SignInFailed += s =>
         {
@@ -42,10 +55,11 @@ public class LeaderboardManager : SingletonBehavior<LeaderboardManager>
         await AuthenticationService.Instance.SignInAnonymouslyAsync();
     }
 
-    public async void AddScore()
+    public async void AddScore(float score)
     {
-        var scoreResponse = await LeaderboardsService.Instance.AddPlayerScoreAsync(LeaderboardId, 102);
+        var scoreResponse = await LeaderboardsService.Instance.AddPlayerScoreAsync(LeaderboardId, score);
         Debug.Log(JsonConvert.SerializeObject(scoreResponse));
+        GetScores();
     }
 
     public async void GetScores()
@@ -54,13 +68,27 @@ public class LeaderboardManager : SingletonBehavior<LeaderboardManager>
             await LeaderboardsService.Instance.GetScoresAsync(LeaderboardId);
         Debug.Log(JsonConvert.SerializeObject(scoresResponse));
 
-        names.text = "";
-        scores.text = "";
+        List<string> nameList = new List<string>();
+        List<string> scoreList = new List<string>();
 
-        foreach(LeaderboardEntry entry in scoresResponse.Results)
+        foreach (LeaderboardEntry entry in scoresResponse.Results)
         {
-            names.text += entry.PlayerName + "\n";
-            scores.text += entry.Score + "\n";
+            string name = "";
+            if(entry.PlayerId == myId)
+            {
+                name += "<color=#AB6F3E>";
+            }
+            name += entry.PlayerName;
+            if (entry.PlayerId == myId)
+            {
+                name += "</color>";
+            }
+            nameList.Add(name);
+            scoreList.Add(entry.Score.ToString("0.#"));
+        }
+        foreach(LeaderboardDisplay display in displays)
+        {
+            display.Display(nameList, scoreList);
         }
     }
 

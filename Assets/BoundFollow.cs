@@ -6,7 +6,8 @@ public class BoundFollow : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float sideBound = isLeft ? CameraFollow.Instance.GetLeftBound() - 5 : CameraFollow.Instance.GetRightBound() + 5;
+        float width = transform.localScale.x / 2;
+        float sideBound = isLeft ? CameraFollow.Instance.GetLeftBound() - width : CameraFollow.Instance.GetRightBound() + width;
         transform.position = new Vector3(sideBound, CameraFollow.Instance.GetLowerBound(), transform.position.z);
     }
 }

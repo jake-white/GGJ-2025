@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEngine.InputSystem.InputAction;
 
@@ -9,7 +10,8 @@ public class Paw : MonoBehaviour
     public GameObject claws;
     public PawState state;
     public float forceMod = 1.0f;
-    private Rigidbody2D body;
+    public Rigidbody2D body;
+    public Paw otherPaw;
     List<Blind> blindsGrabbable;
     Blind grabbedBlind;
     DistanceJoint2D joint;
@@ -24,6 +26,14 @@ public class Paw : MonoBehaviour
     {
         lr.SetPosition(0, transform.position);
         lr.SetPosition(1, armAttach.position);
+        if(grabbedBlind != null)
+        {
+            bool broken = grabbedBlind.DamageDoesItBreak(Time.deltaTime);
+            if(broken)
+            {
+                UnGrab(true);
+            }
+        }
     }
 
     public void Move(Vector2 v)
@@ -54,7 +64,19 @@ public class Paw : MonoBehaviour
                 state = PawState.Grabbing;
                 if (blindsGrabbable.Count > 0)
                 {
-                    Grab(blindsGrabbable[blindsGrabbable.Count - 1]); // grabs the most recently added blind
+                    Blind likelyBlind = blindsGrabbable[blindsGrabbable.Count - 1];  // grabs the most recently added blind
+                    if (likelyBlind.state != BlindState.Broken)
+                    {
+                        if (otherPaw.grabbedBlind == null || otherPaw.grabbedBlind != likelyBlind)
+                        {
+                            Grab(likelyBlind);
+                        }
+                        else // trying to grab the same blind!
+                        {
+                            likelyBlind.Break();
+                            otherPaw.UnGrab(true);
+                        }
+                    }
                 }
             }
         }
@@ -62,7 +84,7 @@ public class Paw : MonoBehaviour
         {
             if (state == PawState.Grabbed)
             {
-                UnGrab();
+                UnGrab(false);
             }
             state = PawState.Free;
         }
@@ -77,16 +99,20 @@ public class Paw : MonoBehaviour
         grabbedBlind = b;
     }
 
-    public void UnGrab()
+    public void UnGrab(bool forcedByBreak)
     {
         body.bodyType = RigidbodyType2D.Dynamic;
         grabbedBlind = null;
-        body.linearVelocity = CatManager.Instance.GetBodyVelocity();
+        if(!forcedByBreak)
+        {
+            body.linearVelocity = CatManager.Instance.GetBodyVelocity();
+        }
+        state = PawState.Free;
     }
 
     private void OnTriggerEnter2D(Collider2D collider)
     {
-        Blind blind = collider.GetComponent<Blind>();
+        Blind blind = collider.GetComponentInParent<Blind>();
         if(blind != null)
         {
             blindsGrabbable.Add(blind);
@@ -95,10 +121,17 @@ public class Paw : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collider)
     {
-        Blind blind = collider.GetComponent<Blind>();
+        Blind blind = collider.GetComponentInParent<Blind>();
         if (blind != null && blindsGrabbable.Contains(blind))
         {
             blindsGrabbable.Remove(blind);
         }
+    }
+
+    public void RocketUpwards(Vector2 startingPos)
+    {
+        transform.position = startingPos;
+        Debug.Log("setting paw to " + startingPos);
+        body.linearVelocity = new Vector2(0, 50);
     }
 }

@@ -41,6 +41,12 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Cat
+    uniqueID: 2996097775
+    locked: 0
+  - name: Blind
+    uniqueID: 2862738823
+    locked: 0
   m_RenderingLayers:
   - Default
   - Light Layer 1

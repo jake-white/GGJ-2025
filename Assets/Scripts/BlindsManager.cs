@@ -12,6 +12,8 @@ public class BlindsManager : SingletonBehavior<BlindsManager>
     public float firstBlindPosition;
     public float minHeight, maxHeight;
     public float minInterval, maxInterval;
+    public float blindWidth;
+    public List<GameObject> breakingIcons;
 
     private float lastBlindHeight;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -23,16 +25,31 @@ public class BlindsManager : SingletonBehavior<BlindsManager>
         for(int i = 0; i < poolSize; i++)
         {
             Blind instance = Instantiate(baseBlind, transform).GetComponent<Blind>();
-            RandomizeBlind(instance);
+            RandomizeBlind(instance, i < 3);
             blindPool.Add(instance);
         }
     }
 
-    public void RandomizeBlind(Blind b)
+    public void RestartLevel()
+    {
+        lastBlindHeight = firstBlindPosition;
+        for (int i = 0; i < poolSize; i++)
+        {
+            RandomizeBlind(blindPool[i], i < 3);
+        }
+    }
+
+    public void RandomizeBlind(Blind b, bool shouldBeUnbreakable)
     {
         float height = Random.Range(minHeight, maxHeight);
-        b.Initialize(height, lastBlindHeight, baseBlind.transform.position.z);
+        b.Initialize(blindWidth, height, lastBlindHeight, baseBlind.transform.position.z, shouldBeUnbreakable);
         lastBlindHeight += height + RandomInterval();
+    }
+
+    public GameObject GetRandomBreakIcon()
+    {
+        int index = Random.Range(0, breakingIcons.Count);
+        return breakingIcons[index];
     }
 
     float RandomInterval()
