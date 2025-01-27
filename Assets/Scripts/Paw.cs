@@ -149,7 +149,6 @@ public class Paw : MonoBehaviour
     public void RocketUpwards(Vector2 startingPos)
     {
         transform.position = startingPos;
-        Debug.Log("setting paw to " + startingPos);
         body.linearVelocity = new Vector2(0, 50);
     }
 }

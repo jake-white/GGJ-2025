@@ -86,7 +86,6 @@ public class GameManager : SingletonBehavior<GameManager>
 
     void Respawn()
     {
-        Debug.Log("Ninth Life Activated");
         hasLife = false;
         CatManager.Instance.RocketUpwards();
     }

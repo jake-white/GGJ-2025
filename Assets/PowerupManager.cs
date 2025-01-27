@@ -60,7 +60,7 @@ public class PowerupManager : SingletonBehavior<PowerupManager>
 
     public void InputNumber(int n)
     {
-        if (!waitingOnPowerup)
+        if (!waitingOnPowerup && GameManager.Instance.state == GameState.Playing)
         {
             source.clip = clips[n];
             source.Play();
@@ -79,7 +79,6 @@ public class PowerupManager : SingletonBehavior<PowerupManager>
                     if (j == currentDial.Length - 1) // last char of dial
                     {
                         matchPossible = true;
-                        Debug.Log(currentDial + " match possible: " + s);
                     }
                     if (j == s.Length - 1) // last char of phone number
                     {
@@ -89,7 +88,6 @@ public class PowerupManager : SingletonBehavior<PowerupManager>
             }
             if (matchFound > -1)
             {
-                Debug.Log("match found: " + powerups[matchFound].phoneNumber);
                 CallPowerup(matchFound);
             }
             if (!matchPossible)

@@ -59,7 +59,6 @@ public class CatManager : SingletonBehavior<CatManager>
     public void RocketUpwards()
     {
         float yToKeep = body.transform.position.y;
-        Debug.Log("yToKeep="+yToKeep);
         body.transform.position = new Vector3(0, yToKeep, 0);
         body.linearVelocity = new Vector2(0, 50);
         leftPaw.RocketUpwards(new Vector3(-5, yToKeep + 8));

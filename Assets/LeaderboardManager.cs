@@ -58,7 +58,6 @@ public class LeaderboardManager : SingletonBehavior<LeaderboardManager>
     public async void AddScore(float score)
     {
         var scoreResponse = await LeaderboardsService.Instance.AddPlayerScoreAsync(LeaderboardId, score);
-        Debug.Log(JsonConvert.SerializeObject(scoreResponse));
         GetScores();
     }
 
@@ -66,7 +65,6 @@ public class LeaderboardManager : SingletonBehavior<LeaderboardManager>
     {
         var scoresResponse =
             await LeaderboardsService.Instance.GetScoresAsync(LeaderboardId);
-        Debug.Log(JsonConvert.SerializeObject(scoresResponse));
 
         List<string> nameList = new List<string>();
         List<string> scoreList = new List<string>();
@@ -92,26 +90,9 @@ public class LeaderboardManager : SingletonBehavior<LeaderboardManager>
         }
     }
 
-    //public async void GetPaginatedScores()
-    //{
-    //    Offset = 10;
-    //    Limit = 10;
-    //    var scoresResponse =
-    //        await LeaderboardsService.Instance.GetScoresAsync(LeaderboardId, new GetScoresOptions { Offset = Offset, Limit = Limit });
-    //    Debug.Log(JsonConvert.SerializeObject(scoresResponse));
-    //}
-
     public async void GetPlayerScore()
     {
         var scoreResponse =
             await LeaderboardsService.Instance.GetPlayerScoreAsync(LeaderboardId);
-        Debug.Log(JsonConvert.SerializeObject(scoreResponse));
     }
-
-    //public async void GetVersionScores()
-    //{
-    //    var versionScoresResponse =
-    //        await LeaderboardsService.Instance.GetVersionScoresAsync(LeaderboardId, VersionId);
-    //    Debug.Log(JsonConvert.SerializeObject(versionScoresResponse));
-    //}
 }

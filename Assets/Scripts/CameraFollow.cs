@@ -18,7 +18,6 @@ public class CameraFollow : SingletonBehavior<CameraFollow>
         cam = GetComponent<Camera>();
         cam.rect = new Rect(0, 0, rectWidth, 1);
         widthRatio = ((float)Screen.width / (float)Screen.height)*rectWidth;
-        Debug.Log(widthRatio);
         boundAmt = BlindsManager.Instance.blindWidth / 2;
         targetOrtho = (boundAmt / widthRatio)*1.1f;
         startingOrtho = targetOrtho * 2;
