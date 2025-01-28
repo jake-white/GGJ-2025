@@ -162,7 +162,7 @@ public class GameManager : SingletonBehavior<GameManager>
 
     public float GetForceMod()
     {
-        float catnipMod = catnipTime > 0.0f ? Mathf.Clamp(catnipTime / 10.0f, 0.0f, 100.0f) : 1.0f;
+        float catnipMod = catnipTime > 0.0f ? Mathf.Clamp(catnipTime / 10.0f, 1.0f, 100.0f) : 1.0f;
         return forceMod * catnipMod;
     }
 }
